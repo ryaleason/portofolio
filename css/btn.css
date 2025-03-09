@@ -91,7 +91,7 @@
   );
   z-index: -1;
 }
-
+    
 .btn-12:hover:after,
 .btn-12:hover:before {
   --progress: 0;
