@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Carousel Slider</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tambahkan AOS CSS -->
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+
+<!-- Tambahkan AOS JS -->
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+
+    <style>
+        .carousel-container {
+            scroll-behavior: smooth;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .carousel-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .project-card {
+            transition: all 0.5s ease;
+        }
+        
+        .project-card.active {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .project-card.inactive {
+            transform: scale(0.85);
+            opacity: 0.6;
+        }
+        
+        .slide-indicator.active {
+            width: 2rem;
+            background-color: #4f46e5;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .progress-bar {
+            transition: width 5s linear;
+        }
+        
+        /* Swipe detection */
+        .swipe-indicator {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-color: rgba(79, 70, 229, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 20;
+            pointer-events: none;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+        
+        .swipe-indicator.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        
+        .swipe-indicator.fade {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-all">
+    <section id="projects" class="py-16 bg-white dark:bg-gray-800 transition-all">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12 fade-in">
+                <h2 class="text-3xl font-bold mb-2">Proyek Terbaru</h2>
+                <div class="w-20 h-1 bg-indigo-600 dark:bg-indigo-400 mx-auto"></div>
+                <p class="mt-4 text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                    Berikut adalah beberapa proyek terbaru yang telah saya kerjakan
+                </p>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="relative h-1 max-w-4xl mx-auto mb-6 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div id="progress-bar" class="progress-bar h-full w-0 bg-indigo-600 dark:bg-indigo-400 rounded-full"></div>
+            </div>
+            
+            <!-- Carousel Container -->
+            <div class="relative max-w-6xl mx-auto">
+                <!-- Swipe indicator element -->
+                <div id="swipe-indicator" class="swipe-indicator"></div>
+                
+                <!-- Navigation Buttons -->
+                <button id="prev-btn" aria-label="Previous project" class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-5 z-10 w-10 h-10 bg-white dark:bg-gray-700 rounded-full shadow-lg flex items-center justify-center text-indigo-600 dark:text-indigo-400 focus:outline-none hover:bg-indigo-100 dark:hover:bg-gray-600 transition-all">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button id="next-btn" aria-label="Next project" class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-5 z-10 w-10 h-10 bg-white dark:bg-gray-700 rounded-full shadow-lg flex items-center justify-center text-indigo-600 dark:text-indigo-400 focus:outline-none hover:bg-indigo-100 dark:hover:bg-gray-600 transition-all">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <!-- Carousel -->
+                <div id="carousel-container" class="carousel-container relative flex overflow-x-scroll snap-x snap-mandatory py-4">
+                    <div id="slide-track" class="flex transition-transform duration-500">
+                        <!-- Project Card 1 -->
+                        <div class="project-card flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-4 snap-center" data-index="0">
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all">
+                                <div class="relative overflow-hidden group">
+                                    <img src="img-project/ABSENSI PINTAD.png" alt="Website Portofolio" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
+                                        <div class="p-4 w-full">
+                                            <span class="inline-block px-3 py-1 bg-indigo-600 text-white text-xs rounded-full mb-2">Featured</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="text-xl font-bold mb-2">Website Portofolio</h3>
+                                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                                        Website portofolio yang modern dan responsif untuk menampilkan proyek dan keterampilan secara menarik.
+                                    </p>
+                                    <div class="flex w-full justify-between">
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">HTML</span>
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">TailwindCSS</span>
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">JavaScript</span>
+                                        </div>
+                    
+                                        <div class="flex items-center justify-center">
+                                            <div class="relative group">
+                                                <a href="#"
+                                                    class="relative inline-block p-[2px] text-sm font-semibold leading-5 text-white cursor-pointer rounded-lg shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95">
+                                                    <span class="absolute inset-0 rounded-lg bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[1px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+                                                    <span class="relative z-10 block px-3 rounded-lg bg-indigo-600">
+                                                        <div class="relative z-10 flex items-center py-2 space-x-1">
+                                                            <span class="transition-all text-s duration-500 group-hover:translate-x-1">Let's Start</span>
+                                                            <svg class="w-3 h-3 transition-transform duration-500 group-hover:translate-x-1" data-slot="icon" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                <path clip-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" fill-rule="evenodd"></path>
+                                                            </svg>
+                                                        </div>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="project-card flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-4 snap-center" data-index="1">
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all">
+                                <div class="relative overflow-hidden group">
+                                    <img src="img-project/image1.png" alt="Simple PhotoBooth" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
+                                        <div class="p-4 w-full">
+                                            <span class="inline-block px-3 py-1 bg-indigo-600 text-white text-xs rounded-full mb-2">Interactive</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="text-xl font-bold mb-2">Simple PhotoBooth</h3>
+                                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                                        Website photobooth interaktif yang memungkinkan pengguna mengambil foto, menambahkan filter kreatif, mencetak instan, dan membagikannya langsung ke media sosial.
+                                    </p>
+                                    <div class="flex w-full justify-between">
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">HTML</span>
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">TailwindCSS</span>
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">JavaScript</span>
+                                        </div>
+                    
+                                        <div class="flex items-center justify-center">
+                                            <div class="relative group">
+                                                <a href="#"
+                                                    class="relative inline-block p-[2px] text-sm font-semibold leading-5 text-white cursor-pointer rounded-lg shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95">
+                                                    <span class="absolute inset-0 rounded-lg bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[1px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+                                                    <span class="relative z-10 block px-3 rounded-lg bg-indigo-600">
+                                                        <div class="relative z-10 flex items-center py-2 space-x-1">
+                                                            <span class="transition-all text-s duration-500 group-hover:translate-x-1">Let's Start</span>
+                                                            <svg class="w-3 h-3 transition-transform duration-500 group-hover:translate-x-1" data-slot="icon" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                <path clip-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" fill-rule="evenodd"></path>
+                                                            </svg>
+                                                        </div>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Project Card 3 -->
+                        <div class="project-card flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-4 snap-center" data-index="2">
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all">
+                                <div class="relative overflow-hidden group">
+                                    <img src="img-project/image1.png" alt="Task Management App" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
+                                        <div class="p-4 w-full">
+                                            <span class="inline-block px-3 py-1 bg-indigo-600 text-white text-xs rounded-full mb-2">Productivity</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="text-xl font-bold mb-2">Task Management App</h3>
+                                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                                        Aplikasi manajemen tugas yang membantu pengguna mengorganisir dan melacak progress pekerjaan dengan antarmuka yang intuitif.
+                                    </p>
+                                    <div class="flex w-full justify-between">
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">HTML</span>
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">TailwindCSS</span>
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">JavaScript</span>
+                                        </div>
+                    
+                                        <div class="flex items-center justify-center">
+                                            <div class="relative group">
+                                                <a href="#"
+                                                    class="relative inline-block p-[2px] text-sm font-semibold leading-5 text-white cursor-pointer rounded-lg shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95">
+                                                    <span class="absolute inset-0 rounded-lg bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[1px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+                                                    <span class="relative z-10 block px-3 rounded-lg bg-indigo-600">
+                                                        <div class="relative z-10 flex items-center py-2 space-x-1">
+                                                            <span class="transition-all text-s duration-500 group-hover:translate-x-1">Let's Start</span>
+                                                            <svg class="w-3 h-3 transition-transform duration-500 group-hover:translate-x-1" data-slot="icon" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                <path clip-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" fill-rule="evenodd"></path>
+                                                            </svg>
+                                                        </div>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="project-card flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-4 snap-center" data-index="2">
+                            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all">
+                                <div class="relative overflow-hidden group">
+                                    <img src="img-project/image2.png" alt="Task Management App" class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-indigo-900/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
+                                        <div class="p-4 w-full">
+                                            <span class="inline-block px-3 py-1 bg-indigo-600 text-white text-xs rounded-full mb-2">Productivity</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <h3 class="text-xl font-bold mb-2">Task Management App</h3>
+                                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                                        Aplikasi manajemen tugas yang membantu pengguna mengorganisir dan melacak progress pekerjaan dengan antarmuka yang intuitif.
+                                    </p>
+                                    <div class="flex w-full justify-between">
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">HTML</span>
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">TailwindCSS</span>
+                                            <span class="px-2 py-1 text-xs cursor-pointer flex items-center bg-indigo-600 text-white rounded-full">JavaScript</span>
+                                        </div>
+                    
+                                        <div class="flex items-center justify-center">
+                                            <div class="relative group">
+                                                <a href="#"
+                                                    class="relative inline-block p-[2px] text-sm font-semibold leading-5 text-white cursor-pointer rounded-lg shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95">
+                                                    <span class="absolute inset-0 rounded-lg bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[1px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"></span>
+                                                    <span class="relative z-10 block px-3 rounded-lg bg-indigo-600">
+                                                        <div class="relative z-10 flex items-center py-2 space-x-1">
+                                                            <span class="transition-all text-s duration-500 group-hover:translate-x-1">Let's Start</span>
+                                                            <svg class="w-3 h-3 transition-transform duration-500 group-hover:translate-x-1" data-slot="icon" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                                <path clip-rule="evenodd" d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" fill-rule="evenodd"></path>
+                                                            </svg>
+                                                        </div>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                        
+
+
+
+
+
+                    </div>
+                </div>
+                
+                <!-- Slide Indicators -->
+                <div class="flex justify-center mt-6 space-x-2">
+                    <div class="slide-indicator h-1 w-4 bg-gray-300 dark:bg-gray-600 rounded-full transition-all active" data-index="0"></div>
+                    <div class="slide-indicator h-1 w-4 bg-gray-300 dark:bg-gray-600 rounded-full transition-all" data-index="1"></div>
+                    <div class="slide-indicator h-1 w-4 bg-gray-300 dark:bg-gray-600 rounded-full transition-all" data-index="2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.getElementById('carousel-container');
+            const slideTrack = document.getElementById('slide-track');
+            const cards = document.querySelectorAll('.project-card');
+            const indicators = document.querySelectorAll('.slide-indicator');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const swipeIndicator = document.getElementById('swipe-indicator');
+            
+            let currentIndex = 0;
+            let autoplayInterval;
+            let startX, moveX;
+            let isPointerDown = false;
+            
+            // Set initial state
+            updateCarouselState();
+            startAutoplay();
+            
+            // Event listeners
+            prevBtn.addEventListener('click', goToPrevSlide);
+            nextBtn.addEventListener('click', goToNextSlide);
+            
+            // Add click event to indicators
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    currentIndex = index;
+                    updateCarouselState();
+                    resetAutoplay();
+                });
+            });
+            
+            // Touch/mouse events for carousel
+            carousel.addEventListener('pointerdown', handlePointerDown);
+            carousel.addEventListener('pointermove', handlePointerMove);
+            carousel.addEventListener('pointerup', handlePointerUp);
+            carousel.addEventListener('pointerleave', handlePointerUp);
+            
+            // Stop autoplay when user interacts with carousel
+            carousel.addEventListener('mouseenter', stopAutoplay);
+            carousel.addEventListener('mouseleave', startAutoplay);
+            
+            // Functions
+            function updateCarouselState() {
+                // Calculate the scroll position
+                const cardWidth = cards[0].offsetWidth;
+                const scrollPosition = currentIndex * cardWidth;
+                
+                // Update slide track position
+                slideTrack.style.transform = `translateX(-${scrollPosition}px)`;
+                
+                // Update active card
+                cards.forEach((card, index) => {
+                    if (index === currentIndex) {
+                        card.classList.add('active');
+                        card.classList.remove('inactive');
+                    } else {
+                        card.classList.add('inactive');
+                        card.classList.remove('active');
+                    }
+                });
+                
+                // Update indicators
+                indicators.forEach((indicator, index) => {
+                    if (index === currentIndex) {
+                        indicator.classList.add('active');
+                    } else {
+                        indicator.classList.remove('active');
+                    }
+                });
+                
+                // Reset and start progress bar
+                progressBar.style.width = '0';
+                setTimeout(() => {
+                    progressBar.style.width = '100%';
+                }, 50);
+            }
+            
+            function goToNextSlide() {
+                currentIndex = (currentIndex + 1) % cards.length;
+                updateCarouselState();
+                resetAutoplay();
+            }
+            
+            function goToPrevSlide() {
+                currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+                updateCarouselState();
+                resetAutoplay();
+            }
+            
+            function startAutoplay() {
+                stopAutoplay();
+                autoplayInterval = setInterval(goToNextSlide, 5000);
+                // Start progress bar
+                progressBar.style.width = '0';
+                setTimeout(() => {
+                    progressBar.style.width = '100%';
+                }, 50);
+            }
+            
+            function stopAutoplay() {
+                clearInterval(autoplayInterval);
+                // Reset progress bar
+                progressBar.style.width = '0';
+            }
+            
+            function resetAutoplay() {
+                stopAutoplay();
+                startAutoplay();
+            }
+            
+            // Touch/Swipe handling
+            function handlePointerDown(e) {
+                isPointerDown = true;
+                startX = e.clientX;
+                carousel.style.cursor = 'grabbing';
+            }
+            
+            function handlePointerMove(e) {
+                if (!isPointerDown) return;
+                e.preventDefault();
+                moveX = e.clientX;
+                
+                // Show swipe indicator
+                swipeIndicator.style.left = e.clientX + 'px';
+                swipeIndicator.style.top = e.clientY + 'px';
+                swipeIndicator.classList.add('active');
+            }
+            
+            function handlePointerUp(e) {
+                if (!isPointerDown) return;
+                isPointerDown = false;
+                carousel.style.cursor = 'grab';
+                
+                // Fade out swipe indicator
+                swipeIndicator.classList.add('fade');
+                setTimeout(() => {
+                    swipeIndicator.classList.remove('active', 'fade');
+                }, 300);
+                
+                if (startX && moveX) {
+                    const diff = startX - moveX;
+                    if (Math.abs(diff) > 50) { // Threshold for swipe detection
+                        if (diff > 0) {
+                            goToNextSlide();
+                        } else {
+                            goToPrevSlide();
+                        }
+                    }
+                }
+                
+                startX = null;
+                moveX = null;
+            }
+        });
+    </script>
+
+
+</body>
+</html>
