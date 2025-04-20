@@ -67,3 +67,6 @@ document.addEventListener('DOMContentLoaded', function () {
         cursorEffect.classList.add('hidden');
     });
 });
+
+
+
